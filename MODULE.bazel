@@ -17,8 +17,8 @@ python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 PYTHON_VERSION = "3.12"
 
 # No need for this since rules_python already creates our version.
-# python.toolchain(python_version = PYTHON_VERSION)
 use_repo(python, "python_versions")
+python.toolchain(python_version = PYTHON_VERSION)
 
 use_repo(pip, "nanopb_pypi")
 pip.parse(
