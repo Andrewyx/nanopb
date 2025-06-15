@@ -1,14 +1,14 @@
 # Apache License, Version 2.0, January 2004, http://www.apache.org/licenses/
 # Adapted from: https://github.com/rules-proto-grpc/rules_proto_grpc/
 
-load("@rules_proto_grpc//internal:filter_files.bzl", "filter_files")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load(
     "@rules_proto_grpc//:defs.bzl",
     "ProtoPluginInfo",
-    "proto_compile_attrs",
     "proto_compile",
+    "proto_compile_attrs",
 )
+load("@rules_proto_grpc//internal:filter_files.bzl", "filter_files")
 
 def cc_nanopb_proto_compile_impl(ctx):
     """Nanopb proto compile implementation to add options files."""
@@ -17,19 +17,18 @@ def cc_nanopb_proto_compile_impl(ctx):
     for options_target in ctx.attr.nanopb_options_files:
         for options_file in options_target.files.to_list():
             extra_protoc_args = extra_protoc_args + [
-                "--nanopb_plugin_opt=-f{}".format(options_file.path)]
+                "--nanopb_plugin_opt=-f{}".format(options_file.path),
+            ]
             extra_protoc_files = extra_protoc_files + [options_file]
     return proto_compile(ctx, ctx.attr.options, extra_protoc_args, extra_protoc_files)
-
 
 nanopb_proto_compile_attrs = dict(
     nanopb_options_files = attr.label_list(
         allow_files = [".options"],
         doc = "An optional list of additional nanopb options files to apply",
     ),
-    **proto_compile_attrs,
+    **proto_compile_attrs
 )
-
 
 # Create compile rule
 cc_nanopb_proto_compile = rule(
@@ -44,9 +43,8 @@ cc_nanopb_proto_compile = rule(
             doc = "List of protoc plugins to apply",
         ),
     ),
-    toolchains = [str(Label("@rules_python//python/proto:toolchain_type"))],
+    toolchains = [str(Label("@rules_proto//proto:toolchain_type"))],
 )
-
 
 def cc_nanopb_proto_library(name, **kwargs):  # buildifier: disable=function-docstring
     # Compile protos
